@@ -1,0 +1,4 @@
+Los datos analizados corresponden a las pruebas PISA 2022.
+El archivo es demasiado grande como para subirlo acá.
+La base se descarga directamente de forma reproducible en 1script_principal.R mediante la librería:
+learningtower::load_student(year = 2022)
