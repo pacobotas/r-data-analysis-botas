@@ -2,25 +2,25 @@
 # EJERCICIO 1 Trabajo práctico análisis de datos
 # ==============================================================================
 
-# Cargar librerías
 library(learningtower)
 library(tidyverse)
-
-# Semilla para reproducibilidad
 set.seed(123)
 
-# Cargar el dataset de estudiantes para el año 2022
+# Cargar el dataset
 pisa_completo <- load_student(year = 2022)
 
 
 # ==============================================================================
-# PREGUNTA 1: Estatus socioeconómico (ESCS) y Rendimiento en Matemática en Latam
+# PREGUNTA 1:  ¿En qué medida el estatus socioeconómico del hogar (ESCS)
+#condiciona el rendimiento en Matemática en los países evaluados de 
+#Latinoamérica en PISA 2022? 
+
 # ==============================================================================
 
-# Países seleccionados de Latinoamérica
+# Países elegidos
 paises_latam <- c("ARG", "BRA", "CHL", "COL", "MEX", "PER", "URY")
 
-# 1. Chequeo previo de NAs
+# NAs
 pisa_completo %>% 
   filter(country %in% paises_latam) %>% 
   summarise(
@@ -29,12 +29,12 @@ pisa_completo %>%
     nas_math = sum(is.na(math))
   )
 
-# 2. Filtrar la base para la Pregunta 1
+# Filtrar
 pisa_p1 <- pisa_completo %>% 
   filter(country %in% paises_latam) %>% 
   filter(!is.na(escs) & !is.na(math))
 
-# 3. Visualización previa: Boxplot de la variable socioeconómica por país
+#Visualización previa
 ggplot(pisa_p1, aes(x = country, y = escs)) +
   geom_boxplot(fill = "darkolivegreen3") +
   labs(
@@ -44,7 +44,7 @@ ggplot(pisa_p1, aes(x = country, y = escs)) +
   ) +
   theme_minimal()
 
-# 4. Análisis: Rendimiento promedio según cuartil socioeconómico por país
+#Análisis:
 rendimiento_escs <- pisa_p1 %>% 
   group_by(country) %>% 
   mutate(cuartil = ntile(escs, 4)) %>% 
@@ -53,11 +53,9 @@ rendimiento_escs <- pisa_p1 %>%
     nota_promedio = mean(math),
     cantidad = n()
   )
-
-# Mostrar la tabla en consola
 print(rendimiento_escs)
 
-# 5. Gráfico final Pregunta 1
+#Gráfico
 ggplot(rendimiento_escs, aes(x = factor(cuartil), y = nota_promedio, color = country, group = country)) +
   geom_line(size = 1) +
   geom_point(size = 2) +
@@ -71,19 +69,22 @@ ggplot(rendimiento_escs, aes(x = factor(cuartil), y = nota_promedio, color = cou
 
 
 # ==============================================================================
-# PREGUNTA 2: Resiliencia académica (Asia del Este vs. Latinoamérica)
+# Pregunta 2: Qué proporción de estudiantes del cuartil socioeconómico más bajo
+#(Q1) logra un rendimiento superior al promedio global de Matemática en Asia 
+#Oriental frente a Latinoamérica? 
+ 
 # ==============================================================================
 # Países de Asia Oriental presentes en PISA 2022
 paises_asia_oriental <- c("JPN", "KOR", "TWN", "HKG", "MAC", "MNG")
 todos_paises_p2 <- c(paises_latam, paises_asia_oriental)
 
-# 1. Chequeo de NAs y creación de la variable de región
+#NAs
 pisa_p2 <- pisa_completo %>% 
   filter(country %in% todos_paises_p2) %>% 
   filter(!is.na(escs) & !is.na(math)) %>% 
   mutate(region = if_else(country %in% paises_asia_oriental, "Asia Oriental", "Latinoamérica"))
 
-# 2. Visualización previa: Boxplot de notas de Matemática por país separado por región
+#Visualización previa
 ggplot(pisa_p2, aes(x = country, y = math, fill = region)) +
   geom_boxplot() +
   facet_wrap(~region, scales = "free_x") +
@@ -94,7 +95,7 @@ ggplot(pisa_p2, aes(x = country, y = math, fill = region)) +
   ) +
   theme_minimal()
 
-# 3. Análisis: Alumnos del cuartil 1 (Q1) que superan el promedio general
+#Análisis
 media_muestra <- mean(pisa_p2$math)
 
 resiliencia <- pisa_p2 %>% 
@@ -108,11 +109,9 @@ resiliencia <- pisa_p2 %>%
     tasa_resiliencia = (resilientes / total_q1) * 100
   ) %>% 
   arrange(desc(tasa_resiliencia))
-
-# Ver tabla de resiliencia
 print(resiliencia)
 
-# 4. Gráfico final Pregunta 2
+# Gráfico
 ggplot(resiliencia, aes(x = reorder(country, tasa_resiliencia), y = tasa_resiliencia, fill = region)) +
   geom_col() +
   coord_flip() +
@@ -125,10 +124,12 @@ ggplot(resiliencia, aes(x = reorder(country, tasa_resiliencia), y = tasa_resilie
   ) +
   theme_minimal()
 # ==============================================================================
-# PREGUNTA 3: Educación de la madre y rendimiento en Lectura (Latinoamérica)
+# PREGUNTA 3: ¿Cómo se relaciona el nivel de instrucción alcanzado por la madre
+#con el puntaje de Lectura de los estudiantes en Latinoamérica? 
+
 # ==============================================================================
 
-# 1. Chequeo de NAs y filtrado
+# NA y filtro
 pisa_completo %>% 
   filter(country %in% paises_latam) %>% 
   summarise(
@@ -140,7 +141,7 @@ pisa_p3 <- pisa_completo %>%
   filter(country %in% paises_latam) %>% 
   filter(!is.na(mother_educ) & !is.na(read))
 
-# 2. Visualización previa: Frecuencia de casos por nivel de instrucción materna
+#Visualización previa
 ggplot(pisa_p3, aes(x = mother_educ)) +
   geom_bar(fill = "steelblue") +
   coord_flip() +
@@ -151,7 +152,7 @@ ggplot(pisa_p3, aes(x = mother_educ)) +
   ) +
   theme_minimal()
 
-# 3. Análisis: Rendimiento promedio en lectura por nivel de educación materna
+#Análisis
 rendimiento_madre <- pisa_p3 %>% 
   group_by(mother_educ) %>% 
   summarise(
@@ -160,10 +161,9 @@ rendimiento_madre <- pisa_p3 %>%
   ) %>% 
   arrange(promedio_lectura)
 
-# Mostrar tabla
 print(rendimiento_madre)
 
-# 4. Gráfico final Pregunta 3
+# Gráfico
 ggplot(rendimiento_madre, aes(x = reorder(mother_educ, promedio_lectura), y = promedio_lectura)) +
   geom_col(fill = "darkgreen") +
   coord_flip() +
