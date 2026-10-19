@@ -1,4 +1,4 @@
 # ==============================================================================
-# FUNCIONES AUXILIARES: ANÁLISIS DE DATOS (PISA 2022)
+# FUNCIONES AUXILIARES: ANÁLISIS DE DATOS 
 # ==============================================================================
-#No use funciones auxiliares
+#No use function
