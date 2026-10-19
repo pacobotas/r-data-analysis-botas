@@ -15,12 +15,11 @@ sacar_al_azar <- function(mazo) {
   list(mano = mazo[posicion, ], mazo_restante = mazo[-posicion, ])
 }
 
-# Prueba de extracción
 extraccion <- sacar_al_azar(mazo)
 extraccion$mano
 nrow(extraccion$mazo_restante)  # Verifica que queden 37 cartas
 
-# Histograma del valor medio de las cartas de la mano (convergencia a media 6)
+# Histograma del valor medio 
 n_sim <- 10000
 valor_medio <- replicate(n_sim, mean(sacar_al_azar(mazo)$mano$numero))
 
